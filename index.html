@@ -1391,6 +1391,24 @@ body.light-theme .social-links img {
     }
 }
 
+        .social-links a svg {
+    color: var(--color-text-secondary);
+    transition: color 0.3s;
+}
+.social-links a:hover svg {
+    color: var(--color-text-primary);
+}
+.footer-contact li svg {
+    color: var(--color-text-muted);
+    flex-shrink: 0;
+}
+body.light-theme .social-links a svg {
+    color: #6b7280;
+}
+body.light-theme .footer-contact li svg {
+    color: #9ca3af;
+}
+
 
     </style>
 
@@ -1608,10 +1626,11 @@ body.light-theme .social-links img {
             <h2 class="cta-title">¿Listo para <span class="gradient-text">Innovar</span>?</h2>
             <p class="cta-subtitle">Únete a las empresas que ya están transformando su futuro con nuestras soluciones tecnológicas.</p>
             <div class="cta-buttons">
+                <!-- ✅ Correcto -->
                 <a href="#consultorias" class="btn btn-primary">
-                    Solicitar Consultoría
-                    <img src="https://ext.same-assets.com/2639324563/1020419018.svg" alt="Arrow" onerror="this.src='https://placehold.co/16x16/ffffff/ffffff?text=.'">
-                </a>
+                Solicitar Consultoría
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
                 <!-- CAMBIO: Botón "Ver Cursos" actualizado a #cursos -->
                 <a href="#cursos" class="btn btn-outline-green">Ver Cursos</a>
             </div>
