@@ -1608,18 +1608,6 @@ body.light-theme .footer-contact li svg {
         </div>
     </section>
 
-    <!-- NUEVA SECCIÓN DE CURSOS (DINÁMICA) -->
-    <section class="specialties" id="cursos">
-        <div class="container">
-            <h2 class="section-title"><span class="gradient-text">Nuestra academia</span></h2>
-            <p class="section-subtitle">Explora nuestros cursos y diplomados cargados desde la base de datos.</p>
-            <div class="cards-grid" id="course-grid">
-                <!-- Los cursos dinámicos se cargarán aquí desde Firestore -->
-                <p class="loading-text">Cargando cursos...</p>
-            </div>
-        </div>
-    </section>
-
 
     <!-- CTA Section --><section class="cta-section" id="consultorias">
         <div class="container">
@@ -1724,20 +1712,6 @@ body.light-theme .footer-contact li svg {
     </div>
 
     <script type="module">
-    // --- IMPORTAR FIREBASE ---
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-
-    // --- CONFIGURACIÓN DE FIREBASE ---
-    const firebaseConfig = {
-        apiKey: "",
-        authDomain: "nitrox-solutions.firebaseapp.com",
-        projectId: "nitrox-solutions",
-        storageBucket: "nitrox-solutions.firebasestorage.app",
-        messagingSenderId: "206070081564",
-        appId: ""
-    };
 
     let db, auth;
 
