@@ -1412,7 +1412,7 @@ body.light-theme .footer-contact li svg {
 
     </style>
 
-    <script src="https://sdk.mercadopago.com/js/v2"></script>
+  
 
 </head>
 <body>
@@ -1429,9 +1429,7 @@ body.light-theme .footer-contact li svg {
                 <nav class="nav">
                     <a href="#inicio" class="nav-link active">Inicio</a>
                     <a href="#servicios" class="nav-link">Servicios</a>
-                    <a href="#consultorias" class="nav-link">Consultorías</a>
-                    <!-- CAMBIO: Enlace de Academia actualizado a #cursos -->
-                    <a href="#cursos" class="nav-link">Academia</a>
+                    <a href="#consultorias" class="nav-link">Consultorías</a>                                   
                     <a href="#sobre-nosotros" class="nav-link">Sobre Nosotros</a>
                     <a href="#contacto" class="nav-link">Contacto</a>
                 </nav>
@@ -1619,8 +1617,6 @@ body.light-theme .footer-contact li svg {
                 Solicitar Consultoría
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </a>
-                <!-- CAMBIO: Botón "Ver Cursos" actualizado a #cursos -->
-                <a href="#cursos" class="btn btn-outline-green">Ver Cursos</a>
             </div>
         </div>
     </section>
@@ -1656,8 +1652,7 @@ body.light-theme .footer-contact li svg {
                         <li><a href="#inicio">Inicio</a></li>
                         <li><a href="#servicios">Servicios</a></li>
                         <li><a href="#consultorias">Consultorías</a></li>
-                        <!-- CAMBIO: Enlace de Academia actualizado a #cursos -->
-                        <li><a href="#cursos">Academia</a></li>
+                                              
                     </ul>
                 </div>
 
@@ -1713,254 +1708,6 @@ body.light-theme .footer-contact li svg {
 
     <script type="module">
 
-    let db, auth;
-
-    // --- FUNCIÓN PARA CARGAR CURSOS ---
-    async function loadCourses() {
-        try {
-            console.log('🔥 Iniciando carga de cursos...');
-            
-            const app = initializeApp(firebaseConfig);
-            console.log('✅ Firebase inicializado');
-            
-            auth = getAuth(app);
-            db = getFirestore(app);
-
-            await signInAnonymously(auth);
-            console.log('✅ Usuario autenticado');
-
-            const courseGrid = document.getElementById('course-grid');
-            if (!courseGrid) {
-                console.error("❌ No se encontró #course-grid");
-                return;
-            }
-
-            console.log('📚 Buscando cursos...');
-            const coursesRef = collection(db, 'courses');
-            const snapshot = await getDocs(coursesRef);
-            
-            console.log('📦 Documentos encontrados:', snapshot.size);
-
-            if (snapshot.empty) {
-                console.log('⚠️ No hay cursos');
-                courseGrid.innerHTML = '<p class="loading-text">No hay cursos disponibles.</p>';
-                return;
-            }
-
-            courseGrid.innerHTML = '';
-
-            snapshot.forEach((doc) => {
-                const course = doc.data();
-                console.log('📄 Curso:', course);
-                
-                const courseCard = document.createElement('div');
-                courseCard.className = 'card';
-
-                const price = course.price ? `$${course.price}` : 'Gratis';
-
-                courseCard.innerHTML = `
-                    <img src="${course.imageUrl || 'https://placehold.co/400x160/050a1f/c8cbcd?text=Curso'}" 
-                        alt="${course.title || 'Título del Curso'}" 
-                        class="course-image"
-                        onerror="this.src='https://placehold.co/400x160/050a1f/c8cbcd?text=Error'">
-                    
-                    <div class="card-content">
-                        <h3 class="card-title">${course.title || 'Título del Curso'}</h3>
-                        <p class="card-description">${course.description || 'Descripción no disponible.'}</p>
-                        
-                        <button class="btn btn-ai">📋 Información</button>
-                        
-                        <div class="course-footer">
-                            <span class="course-price">${price} MXN</span>
-                            <button class="btn btn-primary btn-payment btn-request" 
-                                    data-course-title="${course.title}" 
-                                    data-price="${course.price}">
-                                💳 Comprar
-                            </button>
-                        </div>
-                    </div>
-                `;
-
-                courseGrid.appendChild(courseCard);
-            });
-            
-            console.log('✅ Cursos cargados');
-
-        } catch (error) {
-            console.error("❌ Error:", error);
-            const courseGrid = document.getElementById('course-grid');
-            if(courseGrid) {
-                courseGrid.innerHTML = `<p class="loading-text">Error: ${error.message}</p>`;
-            }
-        }
-    }
-
-    // --- INICIALIZACIÓN ---
-    console.log('🚀 Script cargado');
-    loadCourses();
-
-    // --- SISTEMA DE PAGOS ---
-    const mp = new MercadoPago('APP_USR-f09bdc5b-e170-41bb-a0a8-e4bbc8835248', {
-        locale: 'es-MX'
-    });
-
-    async function crearPreferenciaPago(courseTitle, price) {
-        try {
-            const preference = {
-                items: [{
-                    title: `${courseTitle} - Nitrox Solutions`,
-                    unit_price: parseFloat(price),
-                    quantity: 1,
-                    currency_id: 'MXN'
-                }],
-                back_urls: {
-                    success: window.location.href,
-                    failure: window.location.href,
-                    pending: window.location.href
-                },
-                auto_return: 'approved'
-            };
-
-            const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer APP_USR-5389260303199429-111222-3c739249e9af1b49aa78a813c4047c87-2986592236'
-                },
-                body: JSON.stringify(preference)
-            });
-
-            const data = await response.json();
-            
-            if (data.sandbox_init_point || data.init_point) {
-                window.open(data.sandbox_init_point || data.init_point, '_blank');
-            } else {
-                throw new Error('No se pudo crear la preferencia');
-            }
-
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Error al procesar el pago.');
-        }
-    }
-
-    document.addEventListener('click', (e) => {
-        if (e.target.classList.contains('btn-payment')) {
-            e.preventDefault();
-            
-            const courseTitle = e.target.dataset.courseTitle;
-            const price = parseFloat(e.target.dataset.price);
-            
-            console.log('Procesando pago:', { courseTitle, price });
-            
-            if (!courseTitle || !price) {
-                alert('Error: Datos del curso incompletos');
-                return;
-            }
-            
-            const modal = document.getElementById('aiModal');
-            const modalTitle = document.getElementById('aiModalTitle');
-            const modalText = document.getElementById('aiModalText');
-            const loader = document.getElementById('aiLoader');
-            
-            modalText.style.display = 'none';
-            loader.style.display = 'block';
-            modalTitle.innerText = '💳 Abriendo Mercado Pago...';
-            modal.style.display = 'flex';
-            setTimeout(() => modal.classList.add('show'), 10);
-            
-            crearPreferenciaPago(courseTitle, price).then(() => {
-                setTimeout(() => {
-                    modal.classList.remove('show');
-                    setTimeout(() => modal.style.display = 'none', 300);
-                }, 1000);
-            });
-        }
-    });
-
-    console.log('✅ Sistema de pagos inicializado (Modo TEST)');
-
-    async function consultarGemini(serviceName) {
-        console.log('🤖 Consultando Gemini para:', serviceName);
-        
-        const modal = document.getElementById('aiModal');
-        const modalTitle = document.getElementById('aiModalTitle');
-        const modalText = document.getElementById('aiModalText');
-        const loader = document.getElementById('aiLoader');
-        const closeBtn = document.querySelector('.ai-modal-close');
-
-        modalTitle.innerText = `✨ ${serviceName}`;
-        modalText.style.display = 'none';
-        loader.style.display = 'block';
-        modal.style.display = 'flex';
-        setTimeout(() => modal.classList.add('show'), 10);
-
-        const prompt = `Explica de manera profesional y concisa (máximo 150 palabras) en qué consiste el servicio de "${serviceName}" para una empresa de tecnología llamada Nitrox Solutions. Incluye beneficios clave y casos de uso.`;
-
-        // Lista de endpoints para probar en orden
-        const endpoints = [
-            'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent',
-            'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent',
-            'https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent'
-        ];
-
-        let funcionó = false;
-
-        for (const endpoint of endpoints) {
-            try {
-                console.log(`📤 Probando: ${endpoint}`);
-
-                const response = await fetch(`${endpoint}?key=${GEMINI_API_KEY}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{
-                            parts: [{ text: prompt }]
-                        }]
-                    })
-                });
-
-                console.log(`📥 Respuesta: ${response.status}`);
-
-                if (response.ok) {
-                    const data = await response.json();
-                    
-                    if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
-                        const texto = data.candidates[0].content.parts[0].text;
-                        loader.style.display = 'none';
-                        modalText.style.display = 'block';
-                        modalText.innerText = texto;
-                        console.log('✅ Funcionó con:', endpoint);
-                        funcionó = true;
-                        break;
-                    }
-                } else {
-                    console.log(`❌ Falló: ${response.status}`);
-                }
-            } catch (error) {
-                console.log(`❌ Error en ${endpoint}:`, error.message);
-            }
-        }
-
-        if (!funcionó) {
-            loader.style.display = 'none';
-            modalText.style.display = 'block';
-            modalText.innerText = '⚠️ Tu API Key no tiene acceso a los modelos de Gemini.\n\nVerifica en: https://aistudio.google.com/app/apikey';
-        }
-
-        closeBtn.onclick = () => {
-            modal.classList.remove('show');
-            setTimeout(() => modal.style.display = 'none', 300);
-        };
-
-        modal.onclick = (e) => {
-            if (e.target === modal) {
-                modal.classList.remove('show');
-                setTimeout(() => modal.style.display = 'none', 300);
-            }
-        };
-    }
-
     // Animar tarjetas de servicios
     setTimeout(() => {
         document.querySelectorAll('#servicios .card').forEach((card, index) => {
@@ -1981,22 +1728,6 @@ body.light-theme .footer-contact li svg {
         });
     }, 500);
 
-    // Animar cursos después de cargarlos desde Firebase
-    setTimeout(() => {
-        const observer = new MutationObserver(() => {
-            const courseCards = document.querySelectorAll('#course-grid .card');
-            if (courseCards.length > 0) {
-                courseCards.forEach((card, index) => {
-                    setTimeout(() => {
-                        card.style.opacity = '1';
-                        card.style.transform = 'translateY(0)';
-                    }, index * 100);
-                });
-                observer.disconnect();
-            }
-        });
-        observer.observe(document.getElementById('course-grid'), { childList: true });
-    }, 100);
     
 // Información predefinida para cada servicio
 const serviciosInfo = {
